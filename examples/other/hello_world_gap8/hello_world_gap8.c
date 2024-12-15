@@ -13,7 +13,7 @@ void setupWiFi(void) {
 
     WiFiCTRLPacket_t *wifiCtrl = (WiFiCTRLPacket_t *) txp.data;
 
-    // Set a placeholder SSID
+    // Set a placeholder SSID (doesn't really matter if we're using sta mode)
     wifiCtrl->cmd = WIFI_CTRL_SET_SSID;
     static char ssid[] = "MESH_PLACEHOLDER";
     memcpy(wifiCtrl->data, ssid, sizeof(ssid));
@@ -26,22 +26,20 @@ void setupWiFi(void) {
     wifiCtrl->cmd = WIFI_CTRL_WIFI_CONNECT;
     wifiCtrl->data[0] = 0x00; // Station mode
     wifiCtrl->data[1] = 0x00; // Explicitly set station mode
-    txp.dataLength = 2;       // Send 2 bytes of data
+    txp.dataLength = 2;      
     cpxSendPacketBlocking(&txp);
 
     cpxPrintToConsole(LOG_TO_CRTP, "WiFi connect command sent.\n");
 }
 
-
+// Initialize the GAP8 system (cpx + wifi)
 void start_example(void) {
-    // Initialize the GAP8 system
     pi_bsp_init();
     cpxInit();
     cpxEnableFunction(CPX_F_WIFI_CTRL);
 
     cpxPrintToConsole(LOG_TO_CRTP, "-- Starting Wi-Fi Setup for ESP-MESH --\n");
 
-    // Set up Wi-Fi
     setupWiFi();
 
     // Keep the program running
